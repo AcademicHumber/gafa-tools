@@ -35,26 +35,26 @@ push a main
 ## Paso 2 — Obtener el webhook de Coolify
 
 1. Dentro de la aplicación recién creada, ir a la pestaña **General** o **Webhooks**
-2. Buscar la sección **Deploy Webhook** — Coolify genera una URL con este formato:
-
-   ```
-   https://tu-coolify.com/api/v1/deploy?uuid=APP_UUID&token=WEBHOOK_TOKEN
-   ```
-
-3. Copiar esa URL completa — se usará como secret en GitHub
-
-> La URL ya incluye autenticación (el `token`). Trátala como una contraseña.
+2. Buscar la sección **Deploy Webhook** — Coolify provee dos valores separados:
+   - **URL del endpoint:** `https://tu-coolify.com/api/v1/deploy?uuid=APP_UUID`
+   - **Token:** el valor que se envía como header de autenticación
 
 ---
 
-## Paso 3 — Agregar el secret en GitHub
+## Paso 3 — Agregar los secrets en GitHub
 
 1. En el repositorio de GitHub, ir a **Settings → Secrets and variables → Actions**
-2. Hacer clic en **New repository secret**
-3. Configurar:
-   - **Name:** `COOLIFY_WEBHOOK_URL`
-   - **Secret:** pegar la URL completa del paso anterior
-4. Guardar
+2. Crear **dos** secrets:
+
+   | Name | Valor |
+   |---|---|
+   | `COOLIFY_WEBHOOK_URL` | URL del endpoint (`https://tu-coolify.com/api/v1/deploy?uuid=APP_UUID`) |
+   | `COOLIFY_WEBHOOK_TOKEN` | Token de autenticación |
+
+3. El workflow envía el token como header HTTP:
+   ```
+   Authorization: Bearer <COOLIFY_WEBHOOK_TOKEN>
+   ```
 
 ---
 
@@ -97,11 +97,11 @@ Si en el futuro una herramienta necesita secrets (API keys, etc.):
 ## Troubleshooting
 
 **El webhook falla con 401:**
-El token del secret expiró o es incorrecto. Regenerar el webhook en Coolify y actualizar el secret en GitHub.
+El token es incorrecto o expiró. Regenerar el token en Coolify y actualizar el secret `COOLIFY_WEBHOOK_TOKEN` en GitHub.
 
 **CI pasa pero Coolify no deployó:**
 - Verificar en la pestaña Deployments de Coolify si recibió el trigger
-- Revisar que el secret `COOLIFY_WEBHOOK_URL` está bien copiado (sin espacios al final)
+- Revisar que ambos secrets (`COOLIFY_WEBHOOK_URL` y `COOLIFY_WEBHOOK_TOKEN`) están bien copiados, sin espacios al final
 - Comprobar que el repositorio en Coolify apunta al branch `main`
 
 **Build falla en Coolify pero pasa en CI:**
@@ -116,4 +116,5 @@ El job muestra el error de TypeScript o ESLint. Corregirlo localmente antes de h
 
 | Secret en GitHub | Valor |
 |---|---|
-| `COOLIFY_WEBHOOK_URL` | URL completa del webhook de Coolify (incluye uuid y token) |
+| `COOLIFY_WEBHOOK_URL` | URL del endpoint de Coolify (`https://tu-coolify.com/api/v1/deploy?uuid=APP_UUID`) |
+| `COOLIFY_WEBHOOK_TOKEN` | Token de autenticación (se envía como `Authorization: Bearer`) |
