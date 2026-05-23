@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
       {/* Editorial headline */}
-      <div className="mb-16 md:mb-20">
+      <div className="mb-12 md:mb-20">
         <p
           className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#9B9A95]"
           style={{ fontFamily: "var(--font-syne)" }}
@@ -13,14 +13,14 @@ export default function Home() {
           GAFA · Agencia Web Bolivia
         </p>
         <h1
-          className="text-5xl font-extrabold leading-[1.05] tracking-tight text-[#0D0E0E] md:text-7xl"
+          className="text-[1.9rem] font-extrabold leading-[1.05] tracking-tight text-[#0D0E0E] sm:text-5xl md:text-7xl"
           style={{ fontFamily: "var(--font-syne)" }}
         >
           Herramientas
           <br />
           <span className="text-[#3abeff]">gratuitas.</span>
         </h1>
-        <p className="mt-6 max-w-md text-base text-[#6B6A65]">
+        <p className="mt-5 max-w-md text-sm text-[#6B6A65] sm:text-base">
           Utilidades para potenciar tu presencia digital, sin costo y sin registro.
         </p>
       </div>

@@ -24,13 +24,15 @@ export default function QRGeneratorPage() {
 
         <div className="mt-5 flex items-end gap-4">
           <h1
-            className="text-4xl font-extrabold leading-none tracking-tight text-[#0D0E0E] md:text-5xl"
+            className="text-[1.75rem] font-extrabold leading-none tracking-tight text-[#0D0E0E] sm:text-4xl md:text-5xl"
             style={{ fontFamily: "var(--font-syne)" }}
           >
             QR Generator
           </h1>
-          <span className="mb-1 hidden text-xs font-semibold uppercase tracking-[0.15em] text-[#9B9A95] sm:block"
-            style={{ fontFamily: "var(--font-syne)" }}>
+          <span
+            className="mb-0.5 hidden text-xs font-semibold uppercase tracking-[0.15em] text-[#9B9A95] sm:block"
+            style={{ fontFamily: "var(--font-syne)" }}
+          >
             Herramienta 01
           </span>
         </div>
