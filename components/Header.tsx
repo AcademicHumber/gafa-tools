@@ -17,10 +17,10 @@ export function Header() {
         {/* Logo */}
         <Link href="/" onClick={() => setOpen(false)} className="flex shrink-0 items-center">
           <Image
-            src="/og-image.png"
+            src="/logo.png"
             alt="GAFA"
-            width={56}
-            height={56}
+            width={120}
+            height={60}
             className="object-contain"
             priority
           />
