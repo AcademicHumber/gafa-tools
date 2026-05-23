@@ -11,24 +11,34 @@ export const metadata: Metadata = {
 
 export default function QRGeneratorPage() {
   return (
-    <main className="flex flex-col items-center px-6 py-12">
-      <div className="mb-10 w-full max-w-4xl">
+    <main className="mx-auto w-full max-w-6xl px-6 py-10 md:py-14">
+      {/* Back + title */}
+      <div className="mb-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900"
+          className="group inline-flex items-center gap-2 text-sm text-[#9B9A95] transition-colors hover:text-[#3abeff]"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Todas las herramientas
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span style={{ fontFamily: "var(--font-syne)" }}>Todas las herramientas</span>
         </Link>
-        <div className="mt-6 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+
+        <div className="mt-5 flex items-end gap-4">
+          <h1
+            className="text-4xl font-extrabold leading-none tracking-tight text-[#0D0E0E] md:text-5xl"
+            style={{ fontFamily: "var(--font-syne)" }}
+          >
             QR Generator
           </h1>
-          <p className="mt-2 text-sm text-zinc-500">
-            Genera un código QR con tu logo de branding
-          </p>
+          <span className="mb-1 hidden text-xs font-semibold uppercase tracking-[0.15em] text-[#9B9A95] sm:block"
+            style={{ fontFamily: "var(--font-syne)" }}>
+            Herramienta 01
+          </span>
         </div>
+        <p className="mt-2 text-sm text-[#6B6A65]">
+          Genera un código QR con el logo de tu marca.
+        </p>
       </div>
+
       <QRGenerator />
     </main>
   );

@@ -39,36 +39,44 @@ export function QRGenerator() {
   });
 
   return (
-    <div className="flex w-full max-w-4xl flex-col gap-8 md:flex-row">
-      {/* Controls */}
-      <div className="flex w-full flex-col gap-5 md:max-w-xs">
+    <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+      {/* Controls panel */}
+      <div className="flex w-full flex-col gap-4 rounded-2xl border border-[#E8E7E3] bg-white p-6 shadow-sm lg:max-w-sm">
         <URLInput value={rawUrl} onChange={handleUrlChange} />
+        <div className="h-px bg-[#E8E7E3]" />
         <ColorPicker
           fgColor={fgColor}
           bgColor={bgColor}
           onFgChange={setFgColor}
           onBgChange={setBgColor}
         />
+        <div className="h-px bg-[#E8E7E3]" />
         <LogoUploader
           logoFile={logoFile}
           logoSizePct={logoSizePct}
           onLogoChange={setLogoFile}
           onSizeChange={setLogoSizePct}
         />
+        <div className="h-px bg-[#E8E7E3]" />
         <DownloadButton onClick={downloadPNG} disabled={!debouncedUrl.trim()} />
       </div>
 
-      {/* QR Preview */}
+      {/* Preview panel */}
       <div className="flex flex-1 items-center justify-center">
         {debouncedUrl.trim() ? (
-          <canvas
-            ref={canvasRef}
-            className="rounded-xl shadow-lg"
-            style={{ maxWidth: "100%", height: "auto" }}
-          />
+          <div className="rounded-2xl border border-[#E8E7E3] bg-white p-6 shadow-sm">
+            <canvas
+              ref={canvasRef}
+              className="block rounded-xl"
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+          </div>
         ) : (
-          <div className="flex h-64 w-64 items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 text-sm text-zinc-400 dark:border-zinc-700 dark:text-zinc-500">
-            Ingresa una URL para ver el QR
+          <div className="flex h-72 w-72 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[#E8E7E3]">
+            <div className="h-12 w-12 rounded-xl bg-[#FAFAF8]" />
+            <p className="text-center text-sm text-[#9B9A95]">
+              Ingresa una URL<br />para ver el QR
+            </p>
           </div>
         )}
       </div>

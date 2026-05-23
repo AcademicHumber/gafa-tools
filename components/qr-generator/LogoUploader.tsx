@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { ImagePlus, X } from "lucide-react";
 
 interface Props {
   logoFile: File | null;
@@ -51,18 +52,25 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Logo (opcional)</label>
+      <label
+        className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9B9A95]"
+        style={{ fontFamily: "var(--font-syne)" }}
+      >
+        Logo (opcional)
+      </label>
 
       {logoFile ? (
-        <div className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {previewUrl && <img src={previewUrl} alt="logo preview" className="h-10 w-10 rounded object-contain" />}
-          <span className="flex-1 truncate text-sm text-zinc-700 dark:text-zinc-300">{logoFile.name}</span>
+        <div className="flex items-center gap-3 rounded-xl border border-[#E8E7E3] bg-white px-4 py-3">
+          {previewUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={previewUrl} alt="logo preview" className="h-9 w-9 rounded-lg object-contain" />
+          )}
+          <span className="flex-1 truncate text-sm text-[#6B6A65]">{logoFile.name}</span>
           <button
             onClick={handleRemove}
-            className="text-sm text-zinc-400 hover:text-red-500 dark:hover:text-red-400"
+            className="flex h-6 w-6 items-center justify-center rounded-full text-[#C8C7C2] transition-colors hover:bg-red-50 hover:text-red-500"
           >
-            Quitar
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
       ) : (
@@ -70,10 +78,13 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => inputRef.current?.click()}
-          className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 py-4 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
+          className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#E8E7E3] bg-white py-6 transition-all hover:border-[#3abeff] hover:bg-[#3abeff]/5"
         >
-          <span>Arrastra una imagen o haz clic</span>
-          <span className="text-xs text-zinc-400">PNG o JPG · máx. 5 MB</span>
+          <ImagePlus className="h-5 w-5 text-[#C8C7C2]" />
+          <div className="text-center">
+            <p className="text-sm text-[#6B6A65]">Arrastra o haz clic</p>
+            <p className="text-xs text-[#C8C7C2]">PNG o JPG · máx. 5 MB</p>
+          </div>
         </div>
       )}
 
@@ -85,15 +96,23 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
         onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
       />
 
-      {error && (
-        <p className="text-xs text-red-500">{error}</p>
-      )}
+      {error && <p className="text-xs text-red-500">{error}</p>}
 
       {logoFile && (
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
-            <span>Tamaño del logo</span>
-            <span className={logoSizePct > 30 ? "font-medium text-amber-500" : ""}>{logoSizePct}%</span>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span
+              className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9B9A95]"
+              style={{ fontFamily: "var(--font-syne)" }}
+            >
+              Tamaño del logo
+            </span>
+            <span
+              className={`text-xs font-bold ${logoSizePct > 30 ? "text-amber-500" : "text-[#3abeff]"}`}
+              style={{ fontFamily: "var(--font-syne)" }}
+            >
+              {logoSizePct}%
+            </span>
           </div>
           <input
             type="range"
@@ -101,10 +120,10 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
             max={40}
             value={logoSizePct}
             onChange={(e) => onSizeChange(Number(e.target.value))}
-            className="accent-zinc-800 dark:accent-zinc-300"
+            className="accent-[#3abeff] w-full"
           />
           {logoSizePct > 30 && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">
+            <p className="text-xs text-amber-600">
               Por encima del 30% el QR puede no ser escaneable.
             </p>
           )}
