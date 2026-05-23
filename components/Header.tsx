@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,16 +11,11 @@ export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Cierra el menú al cambiar de página
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   return (
     <header className="sticky top-0 z-50 border-b border-[#1c1d1d] bg-[#0d0e0e]">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-6 px-6">
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center">
+        <Link href="/" onClick={() => setOpen(false)} className="flex shrink-0 items-center">
           <Image
             src="/og-image.png"
             alt="GAFA"
@@ -81,6 +76,7 @@ export function Header() {
                 <Link
                   key={tool.slug}
                   href={tool.href}
+                  onClick={() => setOpen(false)}
                   className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-white text-[#0d0e0e]"
