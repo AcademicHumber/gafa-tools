@@ -12,6 +12,7 @@ interface Props {
 export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFile = (file: File | null) => {
     if (!file) {
@@ -19,9 +20,15 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
       onLogoChange(null);
       return;
     }
-    if (!file.type.startsWith("image/")) {
+    if (!file.type.startsWith("image/") || file.type === "image/svg+xml") {
+      setError("Formato no soportado. Usa PNG o JPG.");
       return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("La imagen no puede superar los 5 MB.");
+      return;
+    }
+    setError(null);
     const url = URL.createObjectURL(file);
     setPreviewUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
@@ -38,6 +45,7 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
 
   const handleRemove = () => {
     handleFile(null);
+    setError(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -65,17 +73,21 @@ export function LogoUploader({ logoFile, logoSizePct, onLogoChange, onSizeChange
           className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 py-4 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-500 dark:hover:bg-zinc-800"
         >
           <span>Arrastra una imagen o haz clic</span>
-          <span className="text-xs text-zinc-400">PNG, JPG, SVG</span>
+          <span className="text-xs text-zinc-400">PNG o JPG · máx. 5 MB</span>
         </div>
       )}
 
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/png,image/jpeg,image/gif,image/webp"
         className="hidden"
         onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
       />
+
+      {error && (
+        <p className="text-xs text-red-500">{error}</p>
+      )}
 
       {logoFile && (
         <div className="flex flex-col gap-1">

@@ -99,10 +99,14 @@ export function useQRCanvas({ url, fgColor, bgColor, logoFile, logoSizePct }: QR
     const canvas = canvasRef.current;
     if (!canvas || !url.trim()) return;
 
-    const link = document.createElement("a");
-    link.download = "qr-code.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    try {
+      const link = document.createElement("a");
+      link.download = "qr-code.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch {
+      alert("No se pudo exportar el QR. El logo puede contener recursos externos que bloquean la descarga.");
+    }
   }, [url]);
 
   return { canvasRef, downloadPNG };
