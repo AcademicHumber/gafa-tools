@@ -49,7 +49,7 @@ export const tools: Tool[] = [
 app/tools/mi-herramienta/page.tsx
 ```
 
-Plantilla mínima:
+Plantilla mínima (usando el design system actual):
 
 ```tsx
 import type { Metadata } from "next";
@@ -65,24 +65,35 @@ export const metadata: Metadata = {
 
 export default function MiHerramientaPage() {
   return (
-    <main className="flex flex-col items-center px-6 py-12">
-      <div className="mb-10 w-full max-w-4xl">
+    <main className="mx-auto w-full max-w-6xl px-6 py-10 md:py-14">
+      <div className="mb-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-900"
+          className="group inline-flex items-center gap-2 text-sm text-[#9B9A95] transition-colors hover:text-[#3abeff]"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Todas las herramientas
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span style={{ fontFamily: "var(--font-syne)" }}>Todas las herramientas</span>
         </Link>
-        <div className="mt-6 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+
+        <div className="mt-5 flex items-end gap-4">
+          <h1
+            className="text-[1.75rem] font-extrabold leading-none tracking-tight text-[#0D0E0E] sm:text-4xl md:text-5xl"
+            style={{ fontFamily: "var(--font-syne)" }}
+          >
             Mi Herramienta
           </h1>
-          <p className="mt-2 text-sm text-zinc-500">
-            Subtítulo breve de la herramienta
-          </p>
+          <span
+            className="mb-0.5 hidden text-xs font-semibold uppercase tracking-[0.15em] text-[#9B9A95] sm:block"
+            style={{ fontFamily: "var(--font-syne)" }}
+          >
+            Herramienta 0N
+          </span>
         </div>
+        <p className="mt-2 text-sm text-[#6B6A65]">
+          Subtítulo breve de la herramienta.
+        </p>
       </div>
+
       <MiHerramienta />
     </main>
   );
@@ -104,7 +115,7 @@ Reglas:
 - El orquestador (`MiHerramienta.tsx`) centraliza el estado y pasa props hacia abajo.
 - Cada subcomponente recibe solo lo que necesita — sin acceso directo a estado global.
 
-Plantilla del orquestador:
+Plantilla del orquestador (layout de dos columnas con design system):
 
 ```tsx
 "use client";
@@ -112,23 +123,50 @@ Plantilla del orquestador:
 import { useState } from "react";
 
 export function MiHerramienta() {
-  // Estado centralizado aquí
   const [valor, setValor] = useState("");
 
   return (
-    <div className="flex w-full max-w-4xl flex-col gap-8 md:flex-row">
+    <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
       {/* Panel de controles */}
-      <div className="flex w-full flex-col gap-5 md:max-w-xs">
-        {/* subcomponentes */}
+      <div className="flex w-full flex-col gap-4 rounded-2xl border border-[#E8E7E3] bg-white p-6 shadow-sm lg:max-w-sm">
+        {/* subcomponentes de control */}
+        <div className="h-px bg-[#E8E7E3]" /> {/* divisor entre secciones */}
+        {/* botón de acción principal */}
+        <button
+          style={{ fontFamily: "var(--font-syne)" }}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3abeff] px-4 py-3 text-sm font-bold text-[#0D0E0E] hover:bg-[#1a9fe8] hover:shadow-lg hover:shadow-[#3abeff]/20 disabled:opacity-40"
+        >
+          Acción principal
+        </button>
       </div>
 
-      {/* Panel de resultado / preview */}
+      {/* Panel de resultado */}
       <div className="flex flex-1 items-center justify-center">
-        {/* resultado */}
+        <div className="rounded-2xl border border-[#E8E7E3] bg-white p-6 shadow-sm">
+          {/* resultado o preview */}
+        </div>
       </div>
     </div>
   );
 }
+```
+
+**Label de campo** (patrón estándar del design system):
+```tsx
+<label
+  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9B9A95]"
+  style={{ fontFamily: "var(--font-syne)" }}
+>
+  Nombre del campo
+</label>
+```
+
+**Input de texto** (patrón estándar):
+```tsx
+<input
+  type="text"
+  className="w-full rounded-xl border border-[#E8E7E3] bg-white px-4 py-3 text-sm text-[#0D0E0E] outline-none placeholder:text-[#C8C7C2] focus:border-[#3abeff] focus:ring-2 focus:ring-[#3abeff]/15 transition-all"
+/>
 ```
 
 ---
@@ -210,15 +248,17 @@ Los IDs deben ser únicos en todo el documento. Usar las iniciales de la herrami
 ## Paso 7 — Verificar
 
 ```bash
-npm run build     # debe completar sin errores TypeScript
+npm run lint      # sin errores ni warnings
+npm run build     # sin errores TypeScript
 npm run dev       # verificar en http://localhost:3000
 ```
 
 Validar manualmente:
-- La tarjeta aparece en el hub (`/`)
-- El link en el header lleva a la herramienta
+- La tarjeta aparece en el hub (`/`) con número ordinal correcto
+- El link en el header lleva a la herramienta (y se marca activo)
 - El botón "← Todas las herramientas" vuelve al hub
 - El título del browser es `[Nombre] | GAFA Tools`
+- La herramienta se ve correctamente en mobile (390px) — headline no desborda
 
 ---
 
