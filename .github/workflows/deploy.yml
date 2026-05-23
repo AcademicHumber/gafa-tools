@@ -1,0 +1,45 @@
+name: CI / CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── CI: corre en todos los pushes y PRs ───────────────────────────────────
+  ci:
+    name: Build & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (verifica tipos + output standalone)
+        run: npm run build
+
+  # ─── CD: solo en push a main, requiere que CI pase ─────────────────────────
+  deploy:
+    name: Deploy → Coolify
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Coolify webhook
+        run: |
+          curl --fail --silent --show-error \
+            "${{ secrets.COOLIFY_WEBHOOK_URL }}"
