@@ -1,7 +1,7 @@
 name: Avisos a Discord
 description: >
   Publica en un canal de Discord cuando se abre o se mergea un PR y cuando un
-  Issue queda "Listo para QA en staging". Ver README.md en esta carpeta.
+  Issue queda "Listo para QA en staging" o recibe "QA conforme" u "QA observado". Ver README.md en esta carpeta.
 
 inputs:
   webhook:
@@ -19,6 +19,10 @@ inputs:
     default: ""
   qa:
     description: Logins de GitHub (separados por coma) a mencionar con "Listo para QA en staging".
+    required: false
+    default: ""
+  produccion:
+    description: Logins de GitHub (separados por coma) que promueven a producción; se los menciona con "QA conforme".
     required: false
     default: ""
   entornos:
@@ -39,4 +43,5 @@ runs:
         DISCORD_USUARIOS: ${{ inputs.usuarios }}
         DISCORD_REVISORES: ${{ inputs.revisores }}
         DISCORD_QA: ${{ inputs.qa }}
+        DISCORD_PRODUCCION: ${{ inputs.produccion }}
         DISCORD_ENTORNOS: ${{ inputs.entornos }}

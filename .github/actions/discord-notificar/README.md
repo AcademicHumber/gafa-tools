@@ -11,6 +11,8 @@ Este repo es público: la acción es genérica y no guarda nada de los proyectos
 | PR abierto, o pasa de borrador a listo | 🆕 PR abierto; marca si está apilado sobre otro PR o si es una promoción a un entorno (`entornos`) | `revisores` |
 | PR mergeado | 🔀 y a qué entorno se despliega; ⚠️ si no entró a la rama principal | autor del PR |
 | Comentario en un Issue que empieza con **Listo para QA en staging** (también con `###` o `**` delante) | 🧪 | `qa` |
+| Comentario en un Issue que empieza con **QA conforme** | ✅ la historia queda lista para la próxima promoción a producción | `produccion` y asignados del Issue |
+| Comentario en un Issue que empieza con **QA observado** | ⚠️ con los defectos de la línea `Defectos: #N` | asignados del Issue |
 
 Nadie recibe una mención por algo que hizo él mismo. Los borradores, los PRs cerrados sin merge y los demás comentarios no avisan.
 
@@ -37,12 +39,15 @@ permissions:
 jobs:
   avisar:
     # Filtra antes de levantar el runner (no gasta minutos de Actions): PRs
-    # cerrados sin merge y comentarios que no son "Listo para QA".
+    # cerrados sin merge y comentarios que no son "Listo para QA", "QA conforme"
+    # ni "QA observado".
     if: >-
       (github.event_name == 'pull_request' &&
         (github.event.action != 'closed' || github.event.pull_request.merged)) ||
       (github.event_name == 'issue_comment' && !github.event.issue.pull_request &&
-        contains(github.event.comment.body, 'Listo para QA'))
+        (contains(github.event.comment.body, 'Listo para QA') ||
+          contains(github.event.comment.body, 'QA conforme') ||
+          contains(github.event.comment.body, 'QA observado')))
     runs-on: ubuntu-latest
     steps:
       - uses: AcademicHumber/gafa-tools/.github/actions/discord-notificar@main
@@ -51,6 +56,7 @@ jobs:
           usuarios: ${{ vars.DISCORD_USUARIOS }}
           revisores: login-del-revisor
           qa: login-de-qa
+          produccion: login-de-quien-promueve
           entornos: '{"main": "staging", "prod": "producción"}'
 ```
 
@@ -58,4 +64,4 @@ Los PRs que vienen de forks no tienen acceso al secreto: la acción deja un warn
 
 ## Probarla en local
 
-`notificar.py` lee el evento de `GITHUB_EVENT_NAME` y `GITHUB_EVENT_PATH` (un JSON con el payload del evento) y la configuración de `DISCORD_WEBHOOK`, `DISCORD_USUARIOS`, `DISCORD_REVISORES`, `DISCORD_QA`, `DISCORD_ENTORNOS` y `GITHUB_REPOSITORY`. Con un webhook de un canal de pruebas se puede correr a mano.
+`notificar.py` lee el evento de `GITHUB_EVENT_NAME` y `GITHUB_EVENT_PATH` (un JSON con el payload del evento) y la configuración de `DISCORD_WEBHOOK`, `DISCORD_USUARIOS`, `DISCORD_REVISORES`, `DISCORD_QA`, `DISCORD_PRODUCCION`, `DISCORD_ENTORNOS` y `GITHUB_REPOSITORY`. Con un webhook de un canal de pruebas se puede correr a mano.
