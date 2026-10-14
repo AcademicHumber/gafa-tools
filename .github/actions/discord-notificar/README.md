@@ -12,8 +12,9 @@ Este repo es público: la acción es genérica y no guarda nada de los proyectos
 | PR mergeado | 🔀 y a qué entorno se despliega; ⚠️ si no entró a la rama principal | autor del PR |
 | Comentario en un Issue que empieza con **Listo para QA en staging** (también con `###` o `**` delante) | 🧪 | `qa` |
 | Comentario en un Issue que empieza con **QA conforme** | ✅ la historia queda lista para la próxima promoción a producción | `produccion` y asignados del Issue |
+| Comentario en un Issue que empieza con **QA observado** | ⚠️ con los defectos de la línea `Defectos: #N` | asignados del Issue |
 
-Nadie recibe una mención por algo que hizo él mismo. Los borradores, los PRs cerrados sin merge y los demás comentarios (incluido **QA observado**, que se resuelve entre QA y quien implementó en el Issue) no avisan.
+Nadie recibe una mención por algo que hizo él mismo. Los borradores, los PRs cerrados sin merge y los demás comentarios no avisan.
 
 Los deploys no los avisa esta acción: los avisa Coolify con sus notificaciones de Discord, porque es el único que sabe si un deploy (automático o manual) salió bien.
 
@@ -38,13 +39,15 @@ permissions:
 jobs:
   avisar:
     # Filtra antes de levantar el runner (no gasta minutos de Actions): PRs
-    # cerrados sin merge y comentarios que no son "Listo para QA" ni "QA conforme".
+    # cerrados sin merge y comentarios que no son "Listo para QA", "QA conforme"
+    # ni "QA observado".
     if: >-
       (github.event_name == 'pull_request' &&
         (github.event.action != 'closed' || github.event.pull_request.merged)) ||
       (github.event_name == 'issue_comment' && !github.event.issue.pull_request &&
         (contains(github.event.comment.body, 'Listo para QA') ||
-          contains(github.event.comment.body, 'QA conforme')))
+          contains(github.event.comment.body, 'QA conforme') ||
+          contains(github.event.comment.body, 'QA observado')))
     runs-on: ubuntu-latest
     steps:
       - uses: AcademicHumber/gafa-tools/.github/actions/discord-notificar@main

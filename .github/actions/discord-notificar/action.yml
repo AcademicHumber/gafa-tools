@@ -1,7 +1,7 @@
 name: Avisos a Discord
 description: >
   Publica en un canal de Discord cuando se abre o se mergea un PR y cuando un
-  Issue queda "Listo para QA en staging" o recibe "QA conforme". Ver README.md en esta carpeta.
+  Issue queda "Listo para QA en staging" o recibe "QA conforme" u "QA observado". Ver README.md en esta carpeta.
 
 inputs:
   webhook:

@@ -1,9 +1,9 @@
 """Traduce un evento de GitHub Actions a un mensaje de Discord.
 
-Avisa cuatro cosas: PR abierto, PR mergeado y los comentarios "Listo para QA
-en staging" y "QA conforme" en un Issue. Lee el evento de GITHUB_EVENT_NAME / GITHUB_EVENT_PATH y
-la configuración de las variables DISCORD_* que pone action.yml. Si el evento no
-amerita aviso, no hace nada. Un error al publicar se informa como warning y no
+Avisa cinco cosas: PR abierto, PR mergeado y los comentarios "Listo para QA
+en staging", "QA conforme" y "QA observado" en un Issue. Lee el evento de
+GITHUB_EVENT_NAME / GITHUB_EVENT_PATH y la configuración de las variables
+DISCORD_* que pone action.yml. Si el evento no amerita aviso, no hace nada. Un error al publicar se informa como warning y no
 hace fallar el job. Solo usa la librería estándar.
 """
 
@@ -15,9 +15,9 @@ import time
 import urllib.error
 import urllib.request
 
-AZUL, VERDE, VIOLETA = 0x3ABEFF, 0x2ECC71, 0x9B59B6
+AZUL, VERDE, VIOLETA, ROJO = 0x3ABEFF, 0x2ECC71, 0x9B59B6, 0xE74C3C
 
-MARCA_QA = re.compile(r"^[\s*_>#]*(listo para qa|qa conforme)", re.IGNORECASE)
+MARCA_QA = re.compile(r"^[\s*_>#]*(listo para qa|qa conforme|qa observado)", re.IGNORECASE)
 
 
 def env_json(nombre):
@@ -86,9 +86,23 @@ def evento_comentario(ev):
     quien = com["user"]["login"]
     cab = f"#{issue['number']} · {issue['title']}"
 
-    if m.group(1).lower() == "qa conforme":
+    marca = m.group(1).lower()
+    implementaron = [a["login"] for a in issue.get("assignees", [])]
+
+    if marca == "qa observado":
+        # Vuelve a quien implementó, con los defectos que enlaza la plantilla ("Defectos: #N").
+        lineas = [f"{nombre(quien)} encontró criterios que no se cumplen en staging."]
+        defectos = re.search(r"^Defectos:[ \t]*(.*#\d.*)$", com["body"], re.M | re.I)
+        if defectos:
+            lineas.append(f"Defectos: {defectos.group(1).strip()}")
+        a_corregir = [i for i in implementaron if i != quien]
+        if a_corregir:
+            lineas.append("Vuelve a: " + ", ".join(nombre(i) for i in a_corregir))
+        return Aviso(f"⚠️ QA observado · {cab}", com["html_url"], ROJO,
+                     "\n".join(lineas), a_corregir, quien)
+
+    if marca == "qa conforme":
         # Con la conformidad, QA archiva el change y la historia entra en la próxima promoción.
-        implementaron = [a["login"] for a in issue.get("assignees", [])]
         lineas = [f"{nombre(quien)} verificó todos los criterios en staging."]
         promueven = [p for p in PRODUCCION if p != quien]
         if promueven:
