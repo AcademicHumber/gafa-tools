@@ -1,7 +1,7 @@
 """Traduce un evento de GitHub Actions a un mensaje de Discord.
 
-Avisa tres cosas: PR abierto, PR mergeado y comentario "Listo para QA en
-staging" en un Issue. Lee el evento de GITHUB_EVENT_NAME / GITHUB_EVENT_PATH y
+Avisa cuatro cosas: PR abierto, PR mergeado y los comentarios "Listo para QA
+en staging" y "QA conforme" en un Issue. Lee el evento de GITHUB_EVENT_NAME / GITHUB_EVENT_PATH y
 la configuración de las variables DISCORD_* que pone action.yml. Si el evento no
 amerita aviso, no hace nada. Un error al publicar se informa como warning y no
 hace fallar el job. Solo usa la librería estándar.
@@ -17,7 +17,7 @@ import urllib.request
 
 AZUL, VERDE, VIOLETA = 0x3ABEFF, 0x2ECC71, 0x9B59B6
 
-LISTO_QA = re.compile(r"^[\s*_>#]*listo para qa", re.IGNORECASE)
+MARCA_QA = re.compile(r"^[\s*_>#]*(listo para qa|qa conforme)", re.IGNORECASE)
 
 
 def env_json(nombre):
@@ -32,6 +32,7 @@ def env_lista(nombre):
 USUARIOS = env_json("DISCORD_USUARIOS")
 REVISORES = env_lista("DISCORD_REVISORES")
 EQUIPO_QA = env_lista("DISCORD_QA")
+PRODUCCION = env_lista("DISCORD_PRODUCCION")
 ENTORNOS = env_json("DISCORD_ENTORNOS")
 
 
@@ -79,14 +80,27 @@ def evento_pr(ev, accion):
 
 def evento_comentario(ev):
     issue, com = ev["issue"], ev["comment"]
-    if "pull_request" in issue or not LISTO_QA.match(com["body"]):
+    m = MARCA_QA.match(com["body"])
+    if "pull_request" in issue or not m:
         return None
     quien = com["user"]["login"]
+    cab = f"#{issue['number']} · {issue['title']}"
+
+    if m.group(1).lower() == "qa conforme":
+        # Con la conformidad, QA archiva el change y la historia entra en la próxima promoción.
+        implementaron = [a["login"] for a in issue.get("assignees", [])]
+        lineas = [f"{nombre(quien)} verificó todos los criterios en staging."]
+        promueven = [p for p in PRODUCCION if p != quien]
+        if promueven:
+            lineas.append("Lista para la próxima promoción a producción: " + ", ".join(nombre(p) for p in promueven))
+        return Aviso(f"✅ QA conforme · {cab}", com["html_url"], VERDE,
+                     "\n".join(lineas), promueven + implementaron, quien)
+
     lineas = [f"{nombre(quien)} lo dejó listo en staging."]
     qa = [q for q in EQUIPO_QA if q != quien]
     if qa:
         lineas.append("A verificar: " + ", ".join(nombre(q) for q in qa))
-    return Aviso(f"🧪 Listo para QA · #{issue['number']} · {issue['title']}", com["html_url"], VIOLETA,
+    return Aviso(f"🧪 Listo para QA · {cab}", com["html_url"], VIOLETA,
                  "\n".join(lineas), qa, quien)
 
 
