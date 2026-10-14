@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python (acciones en .github/actions)
+__pycache__/
+*.py[cod]

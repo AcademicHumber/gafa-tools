@@ -3,3 +3,5 @@ node_modules
 .git
 .env*
 *.md
+.github
+__pycache__

@@ -57,6 +57,8 @@ El workflow `.github/workflows/deploy.yml` tiene dos jobs:
 
 Secrets necesarios en GitHub: `COOLIFY_WEBHOOK_URL` y `COOLIFY_WEBHOOK_TOKEN` (por separado).
 
+Los cambios bajo `.github/actions/` no disparan ese workflow (`paths-ignore`): ahí viven acciones reutilizables por otros repos de GAFA, no parte del sitio. Hoy: `discord-notificar` (avisos a Discord de PR abierto, PR mergeado y "Listo para QA"; ver su `README.md`).
+
 ## Docker / Healthcheck
 
 El Dockerfile usa multi-stage (deps → builder → runner en Alpine). Dos variables de entorno críticas en el runner:

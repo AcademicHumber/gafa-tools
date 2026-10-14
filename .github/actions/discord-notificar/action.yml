@@ -1,0 +1,42 @@
+name: Avisos a Discord
+description: >
+  Publica en un canal de Discord cuando se abre o se mergea un PR y cuando un
+  Issue queda "Listo para QA en staging". Ver README.md en esta carpeta.
+
+inputs:
+  webhook:
+    description: URL del webhook de Discord del canal (pasarla como secreto).
+    required: true
+  usuarios:
+    description: >
+      JSON {"login-de-github": "id-de-discord"} para mencionar a la gente.
+      Quien no esté aparece como @login, sin mención.
+    required: false
+    default: "{}"
+  revisores:
+    description: Logins de GitHub (separados por coma) a mencionar cuando se abre un PR.
+    required: false
+    default: ""
+  qa:
+    description: Logins de GitHub (separados por coma) a mencionar con "Listo para QA en staging".
+    required: false
+    default: ""
+  entornos:
+    description: >
+      JSON {"rama": "entorno"} que se despliega al mergear en esa rama,
+      p. ej. {"main": "staging", "prod": "producción"}.
+    required: false
+    default: "{}"
+
+runs:
+  using: composite
+  steps:
+    - name: Publicar en Discord
+      shell: bash
+      run: python3 "$GITHUB_ACTION_PATH/notificar.py"
+      env:
+        DISCORD_WEBHOOK: ${{ inputs.webhook }}
+        DISCORD_USUARIOS: ${{ inputs.usuarios }}
+        DISCORD_REVISORES: ${{ inputs.revisores }}
+        DISCORD_QA: ${{ inputs.qa }}
+        DISCORD_ENTORNOS: ${{ inputs.entornos }}

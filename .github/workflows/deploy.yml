@@ -3,8 +3,11 @@ name: CI / CD
 on:
   push:
     branches: [main]
+    # Las acciones reutilizables no son parte del sitio: no lo reconstruyen ni redespliegan.
+    paths-ignore: [".github/actions/**"]
   pull_request:
     branches: [main]
+    paths-ignore: [".github/actions/**"]
 
 jobs:
   # ─── CI: corre en todos los pushes y PRs ───────────────────────────────────
